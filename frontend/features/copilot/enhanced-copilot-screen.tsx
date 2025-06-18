@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { IntelligentSuggestion } from "../../shared/components/intelligent-suggestion"
 import { EnhancedCard } from "../../shared/components/enhanced-card"
 import { useCopilot } from "../../shared/providers/copilot-provider"
@@ -45,6 +45,10 @@ export function EnhancedCopilotScreen() {
     productivityScore: 0,
     streakDays: 0,
   })
+  const [prompt, setPrompt] = useState("")
+  const [copilotResult, setCopilotResult] = useState<string | null>(null)
+  const [copilotLoading, setCopilotLoading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     // Simulate stats calculation
@@ -103,48 +107,80 @@ export function EnhancedCopilotScreen() {
     { icon: Music, text: "Saved project: Beat 001", time: "Yesterday", module: "studio" },
   ]
 
-  return (
-    <div className="flex-1 p-4 space-y-6 bg-neutral-900 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">PulseApp Copilot</h1>
-          <p className="text-neutral-400 text-sm">Your intelligent productivity companion</p>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant={isActive ? "default" : "outline"} onClick={toggleCopilot}>
-            {isActive ? "Active" : "Inactive"}
-          </Button>
-          <Button size="sm" variant="outline" onClick={fetchSuggestions} disabled={loading}>
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          </Button>
-          <Button size="sm" variant="outline">
-            <Settings className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+  // Função para enviar prompt para a rota API Copilot
+  const handleCopilotPrompt = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!prompt) return
+    setCopilotLoading(true)
+    setCopilotResult(null)
+    try {
+      const res = await fetch("/api/copilot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      const data = await res.json()
+      setCopilotResult(data.result || data.error || "No response")
+    } catch (err: any) {
+      setCopilotResult("Erro ao consultar a API Copilot")
+    } finally {
+      setCopilotLoading(false)
+      setPrompt("")
+      inputRef.current?.focus()
+    }
+  }
 
-      {/* Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <EnhancedCard className="text-center">
-          <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-400" />
-          <div className="text-2xl font-bold text-white">{stats.productivityScore}</div>
-          <div className="text-xs text-neutral-400">Productivity Score</div>
+  return (
+    <div className="flex-1 p-2 sm:p-4 space-y-4 bg-gradient-to-br from-neutral-900 via-blue-950 to-neutral-900 max-w-md mx-auto w-full min-h-screen animate-fade-in">
+      {/* Cabeçalho visual marcante */}
+      <div className="flex flex-col items-center justify-center mb-4 mt-2">
+        <img src="/placeholder-logo.png" alt="PulseApp" className="w-16 h-16 mb-2 animate-bounce-slow drop-shadow-lg" />
+        <h1 className="text-2xl font-extrabold text-white tracking-tight drop-shadow-md animate-fade-in">PulseApp Copilot</h1>
+        <p className="text-blue-300 text-sm font-medium animate-fade-in">Seu assistente inteligente</p>
+      </div>
+      {/* Formulário Copilot - Mobile First */}
+      <form onSubmit={handleCopilotPrompt} className="flex gap-2 mb-3 sticky top-2 z-10 bg-neutral-900/90 rounded-xl shadow-md p-2 animate-fade-in">
+        <input
+          ref={inputRef}
+          type="text"
+          className="flex-1 rounded-lg px-3 py-2 bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          placeholder="Pergunte algo ao Copilot..."
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+          disabled={copilotLoading}
+          autoFocus
+        />
+        <Button type="submit" size="sm" className="min-w-[80px]" disabled={copilotLoading || !prompt}>
+          {copilotLoading ? "Enviando..." : "Enviar"}
+        </Button>
+      </form>
+      {copilotResult && (
+        <EnhancedCard className="mb-3 bg-neutral-800 text-white border border-blue-500 animate-fade-in text-base break-words p-3 animate-pop-in">
+          <div className="font-semibold mb-1 text-blue-300">Resposta do Copilot:</div>
+          <div className="whitespace-pre-line text-blue-200 text-base">{copilotResult}</div>
         </EnhancedCard>
-        <EnhancedCard className="text-center">
-          <Activity className="w-6 h-6 mx-auto mb-2 text-blue-400" />
-          <div className="text-2xl font-bold text-white">{stats.acceptedToday}</div>
-          <div className="text-xs text-neutral-400">Actions Today</div>
+      )}
+      {/* Stats Dashboard - Mobile Grid */}
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        <EnhancedCard className="text-center py-2 animate-pop-in">
+          <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-400" />
+          <div className="text-lg font-bold text-white">{stats.productivityScore}</div>
+          <div className="text-xs text-neutral-400">Produtividade</div>
         </EnhancedCard>
-        <EnhancedCard className="text-center">
-          <BarChart3 className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-          <div className="text-2xl font-bold text-white">{stats.totalSuggestions}</div>
-          <div className="text-xs text-neutral-400">Active Suggestions</div>
+        <EnhancedCard className="text-center py-2 animate-pop-in">
+          <Activity className="w-5 h-5 mx-auto mb-1 text-blue-400" />
+          <div className="text-lg font-bold text-white">{stats.acceptedToday}</div>
+          <div className="text-xs text-neutral-400">Ações Hoje</div>
         </EnhancedCard>
-        <EnhancedCard className="text-center">
-          <Clock className="w-6 h-6 mx-auto mb-2 text-orange-400" />
-          <div className="text-2xl font-bold text-white">{stats.streakDays}</div>
-          <div className="text-xs text-neutral-400">Day Streak</div>
+        <EnhancedCard className="text-center py-2 animate-pop-in">
+          <BarChart3 className="w-5 h-5 mx-auto mb-1 text-purple-400" />
+          <div className="text-lg font-bold text-white">{stats.totalSuggestions}</div>
+          <div className="text-xs text-neutral-400">Sugestões</div>
+        </EnhancedCard>
+        <EnhancedCard className="text-center py-2 animate-pop-in">
+          <Clock className="w-5 h-5 mx-auto mb-1 text-orange-400" />
+          <div className="text-lg font-bold text-white">{stats.streakDays}</div>
+          <div className="text-xs text-neutral-400">Dias seguidos</div>
         </EnhancedCard>
       </div>
 
