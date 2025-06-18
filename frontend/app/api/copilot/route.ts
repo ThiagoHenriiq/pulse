@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
     if (data.choices && data.choices[0]?.message?.content) {
       return NextResponse.json({ result: data.choices[0].message.content });
     }
-    return NextResponse.json({ error: data.error?.message || "Erro desconhecido" }, { status: 500 });
+    // Log detalhado do erro retornado pelo OpenRouter
+    return NextResponse.json({ error: data.error?.message || "Erro desconhecido", debug: data }, { status: 500 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

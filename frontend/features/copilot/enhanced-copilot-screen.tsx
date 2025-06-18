@@ -131,123 +131,111 @@ export function EnhancedCopilotScreen() {
   }
 
   return (
-    <div className="flex-1 p-2 sm:p-4 space-y-4 bg-gradient-to-br from-neutral-900 via-blue-950 to-neutral-900 max-w-md mx-auto w-full min-h-screen animate-fade-in">
-      {/* Cabeçalho visual marcante */}
-      <div className="flex flex-col items-center justify-center mb-4 mt-2">
-        <div className="w-16 h-16 mb-2 rounded-full overflow-hidden bg-neutral-800 flex items-center justify-center">
-          <img src="/placeholder-logo.png" alt="PulseApp" className="object-contain aspect-square w-full h-full" />
+    <div className="flex-1 min-h-screen max-w-md mx-auto bg-gradient-to-br from-neutral-900 via-blue-950 to-neutral-900 relative overflow-x-hidden">
+      {/* Cabeçalho fixo estilo iOS */}
+      <header className="sticky top-0 z-30 flex flex-col items-center justify-center py-4 bg-neutral-900/80 backdrop-blur-md shadow-md rounded-b-3xl mb-4">
+        <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-2 shadow-lg">
+          <img src="/placeholder-logo.png" alt="PulseApp" className="object-contain w-10 h-10" />
         </div>
-        <h1 className="text-xl font-bold text-white tracking-tight drop-shadow-md animate-fade-in">PulseApp Copilot</h1>
-        <p className="text-blue-300 text-xs font-medium animate-fade-in">Seu assistente inteligente</p>
-      </div>
-      {/* Formulário Copilot - Mobile First */}
-      <form onSubmit={handleCopilotPrompt} className="flex gap-2 mb-4 sticky top-2 z-10 bg-neutral-900/90 rounded-xl shadow-md p-2 animate-fade-in">
+        <h1 className="text-2xl font-bold text-white tracking-tight">PulseApp Copilot</h1>
+        <p className="text-blue-300 text-xs font-medium">Seu assistente inteligente</p>
+      </header>
+      {/* Formulário Copilot */}
+      <form onSubmit={handleCopilotPrompt} className="flex gap-2 mb-4 px-4">
         <input
           ref={inputRef}
           type="text"
-          className="flex-1 rounded-lg px-3 py-2 bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          className="flex-1 rounded-xl px-4 py-3 bg-white/10 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-base shadow-inner backdrop-blur-md"
           placeholder="Pergunte algo ao Copilot..."
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
           disabled={copilotLoading}
-          autoFocus
         />
-        <Button type="submit" size="sm" className="min-w-[80px]" disabled={copilotLoading || !prompt}>
-          {copilotLoading ? "Enviando..." : "Enviar"}
+        <Button type="submit" size="sm" className="rounded-xl px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white shadow-md" disabled={copilotLoading || !prompt}>
+          {copilotLoading ? "..." : "Enviar"}
         </Button>
       </form>
+      {/* Resposta do Copilot */}
       {copilotResult && (
-        <EnhancedCard className="mb-3 bg-neutral-800 text-white border border-blue-500 animate-fade-in text-base break-words p-3 animate-pop-in">
-          <div className="font-semibold mb-1 text-blue-300">Resposta do Copilot:</div>
-          <div className="whitespace-pre-line text-blue-200 text-base">{copilotResult}</div>
-        </EnhancedCard>
+        <div className="mx-4 mb-4">
+          <EnhancedCard className="bg-white/20 border-none shadow-xl rounded-2xl p-4 text-white backdrop-blur-md animate-pop-in">
+            <div className="font-semibold mb-1 text-blue-200">Resposta do Copilot:</div>
+            <div className="whitespace-pre-line text-blue-100 text-base">{copilotResult}</div>
+          </EnhancedCard>
+        </div>
       )}
-      {/* Stats Dashboard - Mobile Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <EnhancedCard className="text-center py-2 animate-pop-in">
-          <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-400" />
-          <div className="text-lg font-bold text-white">{stats.productivityScore}</div>
-          <div className="text-xs text-neutral-400">Produtividade</div>
+      {/* Dashboard minimalista */}
+      <div className="grid grid-cols-2 gap-4 px-4 mb-4">
+        <EnhancedCard className="rounded-2xl bg-white/10 shadow-lg text-center py-4 backdrop-blur-md">
+          <TrendingUp className="w-6 h-6 mx-auto mb-1 text-green-400" />
+          <div className="text-xl font-bold text-white">{stats.productivityScore}</div>
+          <div className="text-xs text-neutral-300">Produtividade</div>
         </EnhancedCard>
-        <EnhancedCard className="text-center py-2 animate-pop-in">
-          <Activity className="w-5 h-5 mx-auto mb-1 text-blue-400" />
-          <div className="text-lg font-bold text-white">{stats.acceptedToday}</div>
-          <div className="text-xs text-neutral-400">Ações Hoje</div>
+        <EnhancedCard className="rounded-2xl bg-white/10 shadow-lg text-center py-4 backdrop-blur-md">
+          <Activity className="w-6 h-6 mx-auto mb-1 text-blue-400" />
+          <div className="text-xl font-bold text-white">{stats.acceptedToday}</div>
+          <div className="text-xs text-neutral-300">Ações Hoje</div>
         </EnhancedCard>
       </div>
-      {/* Sugestões Inteligentes */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold text-white">Sugestões Inteligentes</h2>
-          <Badge variant="secondary">{suggestions.length} ativas</Badge>
-        </div>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-neutral-800">
-            <TabsTrigger value="all">Todas</TabsTrigger>
-            <TabsTrigger value="learn">Learn</TabsTrigger>
-            <TabsTrigger value="studio">Studio</TabsTrigger>
-            <TabsTrigger value="finance">Finance</TabsTrigger>
-          </TabsList>
-          <TabsContent value={activeTab} className="mt-2">
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-              </div>
-            ) : getFilteredSuggestions().length > 0 ? (
-              <div className="space-y-3">
-                {getFilteredSuggestions().map((suggestion) => (
-                  <IntelligentSuggestion
-                    key={suggestion.id}
-                    suggestion={suggestion}
-                    onAccept={handleAcceptSuggestion}
-                    onReject={handleRejectSuggestion}
-                    onFeedback={(id) => console.log("Feedback for:", id)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EnhancedCard className="text-center py-6">
-                <div className="text-neutral-400 mb-2">Nenhuma sugestão disponível</div>
-                <div className="text-sm text-neutral-500">
-                  {activeTab === "all"
-                    ? "Seu assistente está analisando seus padrões..."
-                    : `Nenhuma sugestão para ${activeTab}`}
-                </div>
-              </EnhancedCard>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
-      {/* Seções colapsáveis para ações rápidas e atividades recentes */}
-      <details className="mb-2">
-        <summary className="text-white font-semibold cursor-pointer">Ações Rápidas</summary>
-        <div className="grid grid-cols-2 gap-2 mt-2">
+      {/* Quick Actions estilo launcher */}
+      <section className="px-4 mb-4">
+        <h2 className="text-lg font-semibold text-white mb-2">Ações Rápidas</h2>
+        <div className="grid grid-cols-3 gap-4">
           {quickActions.map((action, index) => (
-            <EnhancedCard key={index} className="text-center cursor-pointer hover:scale-105 transition-transform">
-              <action.icon className={`w-6 h-6 mx-auto mb-2 ${action.color}`} />
-              <div className="text-sm font-medium text-white">{action.title}</div>
-              <div className="text-xs text-neutral-400">{action.subtitle}</div>
+            <EnhancedCard key={index} className="rounded-2xl bg-white/10 shadow-lg flex flex-col items-center justify-center py-6 cursor-pointer hover:scale-105 transition-transform backdrop-blur-md">
+              <action.icon className={`w-8 h-8 mb-2 ${action.color}`} />
+              <div className="text-sm font-semibold text-white mb-1">{action.title}</div>
+              <div className="text-xs text-neutral-300">{action.subtitle}</div>
             </EnhancedCard>
           ))}
         </div>
-      </details>
-      <details>
-        <summary className="text-white font-semibold cursor-pointer">Atividade Recente</summary>
-        <div className="space-y-2 mt-2">
-          {recentActivity.map((activity, index) => (
-            <EnhancedCard key={index} className="flex items-center gap-3 py-3">
-              <activity.icon className="w-4 h-4 text-neutral-400" />
-              <div className="flex-1">
-                <p className="text-sm text-white">{activity.text}</p>
-                <p className="text-xs text-neutral-500">{activity.time}</p>
-              </div>
-              <Badge variant="outline" className="text-xs">
-                {activity.module}
-              </Badge>
+      </section>
+      {/* Sugestões Inteligentes */}
+      <section className="px-4 mb-4">
+        <h2 className="text-lg font-semibold text-white mb-2">Sugestões Inteligentes</h2>
+        <div className="space-y-3">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          ) : getFilteredSuggestions().length > 0 ? (
+            getFilteredSuggestions().map((suggestion) => (
+              <EnhancedCard key={suggestion.id} className="rounded-2xl bg-white/10 shadow-lg p-4 text-white backdrop-blur-md animate-fade-in">
+                <IntelligentSuggestion
+                  suggestion={suggestion}
+                  onAccept={handleAcceptSuggestion}
+                  onReject={handleRejectSuggestion}
+                  onFeedback={(id) => console.log("Feedback for:", id)}
+                />
+              </EnhancedCard>
+            ))
+          ) : (
+            <EnhancedCard className="rounded-2xl bg-white/10 shadow-lg text-center py-6 text-neutral-300 backdrop-blur-md">
+              Nenhuma sugestão disponível
             </EnhancedCard>
-          ))}
+          )}
         </div>
-      </details>
+      </section>
+      {/* Atividade Recente colapsável */}
+      <section className="px-4 mb-8">
+        <details className="rounded-2xl bg-white/10 shadow-lg p-4 backdrop-blur-md">
+          <summary className="text-white font-semibold cursor-pointer mb-2">Atividade Recente</summary>
+          <div className="space-y-2 mt-2">
+            {recentActivity.map((activity, index) => (
+              <EnhancedCard key={index} className="flex items-center gap-3 py-3 bg-transparent shadow-none">
+                <activity.icon className="w-4 h-4 text-neutral-400" />
+                <div className="flex-1">
+                  <p className="text-sm text-white">{activity.text}</p>
+                  <p className="text-xs text-neutral-500">{activity.time}</p>
+                </div>
+                <Badge variant="outline" className="text-xs">
+                  {activity.module}
+                </Badge>
+              </EnhancedCard>
+            ))}
+          </div>
+        </details>
+      </section>
     </div>
   )
 }
