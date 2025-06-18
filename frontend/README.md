@@ -28,3 +28,42 @@ Continue building your app on:
 2. Deploy your chats from the v0 interface
 3. Changes are automatically pushed to this repository
 4. Vercel deploys the latest version from this repository
+
+# Pulse App Frontend (Next.js)
+
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
+
+## Rotas API disponíveis
+
+- `POST /api/copilot` — Integração com OpenAI (enviar `{ "prompt": "sua pergunta" }`)
+- `POST /api/schedule` — Agendamento (exemplo)
+- `POST /api/finance` — Finanças (exemplo)
+- `POST /api/health` — Saúde (exemplo)
+
+## Variáveis de ambiente
+
+Crie um arquivo `.env.local` na raiz do frontend:
+
+```
+OPENAI_API_KEY=sua_chave_openai_aqui
+```
+
+## Rodando localmente
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+Acesse: http://localhost:3000
+
+## Deploy na Vercel
+
+1. Crie uma conta em https://vercel.com/
+2. Conecte seu repositório GitHub.
+3. Defina a variável de ambiente `OPENAI_API_KEY` no painel da Vercel (Settings > Environment Variables).
+4. Deploy automático a cada push!
+
+---
+
+*Documentação gerada por GitHub Copilot*
