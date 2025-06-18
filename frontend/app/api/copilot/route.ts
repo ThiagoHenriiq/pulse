@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { prompt } = await req.json();
   const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    // Log para depuração em ambiente de produção
+    return NextResponse.json({ error: "OPENAI_API_KEY não encontrada no ambiente." }, { status: 500 });
+  }
   if (!prompt) {
     return NextResponse.json({ error: "Prompt obrigatório." }, { status: 400 });
   }
@@ -14,7 +18,7 @@ export async function POST(req: NextRequest) {
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "mistralai/mixtral-8x7b-instruct", // modelo gratuito
+        model: "mistralai/mixtral-8x7b-instruct",
         messages: [{ role: "user", content: prompt }],
       }),
     });

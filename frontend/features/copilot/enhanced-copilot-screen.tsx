@@ -134,12 +134,14 @@ export function EnhancedCopilotScreen() {
     <div className="flex-1 p-2 sm:p-4 space-y-4 bg-gradient-to-br from-neutral-900 via-blue-950 to-neutral-900 max-w-md mx-auto w-full min-h-screen animate-fade-in">
       {/* Cabeçalho visual marcante */}
       <div className="flex flex-col items-center justify-center mb-4 mt-2">
-        <img src="/placeholder-logo.png" alt="PulseApp" className="w-16 h-16 mb-2 animate-bounce-slow drop-shadow-lg" />
-        <h1 className="text-2xl font-extrabold text-white tracking-tight drop-shadow-md animate-fade-in">PulseApp Copilot</h1>
-        <p className="text-blue-300 text-sm font-medium animate-fade-in">Seu assistente inteligente</p>
+        <div className="w-16 h-16 mb-2 rounded-full overflow-hidden bg-neutral-800 flex items-center justify-center">
+          <img src="/placeholder-logo.png" alt="PulseApp" className="object-contain aspect-square w-full h-full" />
+        </div>
+        <h1 className="text-xl font-bold text-white tracking-tight drop-shadow-md animate-fade-in">PulseApp Copilot</h1>
+        <p className="text-blue-300 text-xs font-medium animate-fade-in">Seu assistente inteligente</p>
       </div>
       {/* Formulário Copilot - Mobile First */}
-      <form onSubmit={handleCopilotPrompt} className="flex gap-2 mb-3 sticky top-2 z-10 bg-neutral-900/90 rounded-xl shadow-md p-2 animate-fade-in">
+      <form onSubmit={handleCopilotPrompt} className="flex gap-2 mb-4 sticky top-2 z-10 bg-neutral-900/90 rounded-xl shadow-md p-2 animate-fade-in">
         <input
           ref={inputRef}
           type="text"
@@ -161,7 +163,7 @@ export function EnhancedCopilotScreen() {
         </EnhancedCard>
       )}
       {/* Stats Dashboard - Mobile Grid */}
-      <div className="grid grid-cols-2 gap-2 mb-2">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <EnhancedCard className="text-center py-2 animate-pop-in">
           <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-400" />
           <div className="text-lg font-bold text-white">{stats.productivityScore}</div>
@@ -172,44 +174,27 @@ export function EnhancedCopilotScreen() {
           <div className="text-lg font-bold text-white">{stats.acceptedToday}</div>
           <div className="text-xs text-neutral-400">Ações Hoje</div>
         </EnhancedCard>
-        <EnhancedCard className="text-center py-2 animate-pop-in">
-          <BarChart3 className="w-5 h-5 mx-auto mb-1 text-purple-400" />
-          <div className="text-lg font-bold text-white">{stats.totalSuggestions}</div>
-          <div className="text-xs text-neutral-400">Sugestões</div>
-        </EnhancedCard>
-        <EnhancedCard className="text-center py-2 animate-pop-in">
-          <Clock className="w-5 h-5 mx-auto mb-1 text-orange-400" />
-          <div className="text-lg font-bold text-white">{stats.streakDays}</div>
-          <div className="text-xs text-neutral-400">Dias seguidos</div>
-        </EnhancedCard>
       </div>
-
-      {/* Intelligent Suggestions */}
+      {/* Sugestões Inteligentes */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Smart Suggestions</h2>
-          <Badge variant="secondary">{suggestions.length} active</Badge>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold text-white">Sugestões Inteligentes</h2>
+          <Badge variant="secondary">{suggestions.length} ativas</Badge>
         </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-neutral-800">
-            <TabsTrigger value="all">All</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-neutral-800">
+            <TabsTrigger value="all">Todas</TabsTrigger>
             <TabsTrigger value="learn">Learn</TabsTrigger>
             <TabsTrigger value="studio">Studio</TabsTrigger>
             <TabsTrigger value="finance">Finance</TabsTrigger>
-            <TabsTrigger value="health">Health</TabsTrigger>
-            <TabsTrigger value="flow">Flow</TabsTrigger>
-            <TabsTrigger value="playground">Lab</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
-
-          <TabsContent value={activeTab} className="mt-4">
+          <TabsContent value={activeTab} className="mt-2">
             {loading ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
               </div>
             ) : getFilteredSuggestions().length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {getFilteredSuggestions().map((suggestion) => (
                   <IntelligentSuggestion
                     key={suggestion.id}
@@ -221,23 +206,22 @@ export function EnhancedCopilotScreen() {
                 ))}
               </div>
             ) : (
-              <EnhancedCard className="text-center py-8">
-                <div className="text-neutral-400 mb-2">No suggestions available</div>
+              <EnhancedCard className="text-center py-6">
+                <div className="text-neutral-400 mb-2">Nenhuma sugestão disponível</div>
                 <div className="text-sm text-neutral-500">
                   {activeTab === "all"
-                    ? "Your AI assistant is analyzing your patterns..."
-                    : `No suggestions for ${activeTab} module`}
+                    ? "Seu assistente está analisando seus padrões..."
+                    : `Nenhuma sugestão para ${activeTab}`}
                 </div>
               </EnhancedCard>
             )}
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {/* Seções colapsáveis para ações rápidas e atividades recentes */}
+      <details className="mb-2">
+        <summary className="text-white font-semibold cursor-pointer">Ações Rápidas</summary>
+        <div className="grid grid-cols-2 gap-2 mt-2">
           {quickActions.map((action, index) => (
             <EnhancedCard key={index} className="text-center cursor-pointer hover:scale-105 transition-transform">
               <action.icon className={`w-6 h-6 mx-auto mb-2 ${action.color}`} />
@@ -246,12 +230,10 @@ export function EnhancedCopilotScreen() {
             </EnhancedCard>
           ))}
         </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
-        <div className="space-y-2">
+      </details>
+      <details>
+        <summary className="text-white font-semibold cursor-pointer">Atividade Recente</summary>
+        <div className="space-y-2 mt-2">
           {recentActivity.map((activity, index) => (
             <EnhancedCard key={index} className="flex items-center gap-3 py-3">
               <activity.icon className="w-4 h-4 text-neutral-400" />
@@ -265,7 +247,7 @@ export function EnhancedCopilotScreen() {
             </EnhancedCard>
           ))}
         </div>
-      </div>
+      </details>
     </div>
   )
 }
