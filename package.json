@@ -7,7 +7,11 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "frontend:dev": "cd frontend && pnpm dev",
+    "frontend:build": "cd frontend && pnpm build",
+    "frontend:start": "cd frontend && pnpm start",
+    "serve:frontend": "node server.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.24.0",
