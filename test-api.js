@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const BASE_URL = 'https://SEU-PROJETO.vercel.app/api'; // Altere para a URL do seu deploy
+const BASE_URL = 'https://pulse-hgv2.vercel.app/api'; // URL do seu deploy Vercel
 
 async function testEndpoint(endpoint, body = {}) {
   const res = await fetch(`${BASE_URL}/${endpoint}`, {
