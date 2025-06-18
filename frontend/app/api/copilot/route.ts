@@ -4,7 +4,6 @@ export async function POST(req: NextRequest) {
   const { prompt } = await req.json();
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    // Log para depuração em ambiente de produção
     return NextResponse.json({ error: "OPENAI_API_KEY não encontrada no ambiente." }, { status: 500 });
   }
   if (!prompt) {
@@ -22,12 +21,23 @@ export async function POST(req: NextRequest) {
         messages: [{ role: "user", content: prompt }],
       }),
     });
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
     if (data.choices && data.choices[0]?.message?.content) {
       return NextResponse.json({ result: data.choices[0].message.content });
     }
-    // Log detalhado do erro retornado pelo OpenRouter
-    return NextResponse.json({ error: data.error?.message || "Erro desconhecido", debug: data }, { status: 500 });
+    // Log detalhado: status, headers e corpo bruto
+    return NextResponse.json({
+      error: data.error?.message || "Erro desconhecido",
+      status: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+      body: data
+    }, { status: 500 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
